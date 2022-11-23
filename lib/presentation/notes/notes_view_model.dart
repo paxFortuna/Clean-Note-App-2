@@ -22,10 +22,11 @@ class NotesViewModel with ChangeNotifier {
   // @Default([]) 지정한 경우 아래처럼
   // NotesState _state = NotesState();
   // required로 state 생성한 경우 초기값 넣어줘야 함
-  NotesState _state = const NotesState(
+  NotesState _state = NotesState(
     notes: [],
-    noteOrder: NoteOrder.date(OrderType.descending()),
+    noteOrder: const NoteOrder.date(OrderType.descending()),
     isOrderSectionVisible: false,
+    initialSelectedDate: DateTime.now().toLocal(),
   );
 
   NotesState get state => _state;
@@ -67,14 +68,24 @@ class NotesViewModel with ChangeNotifier {
     // getNotesUseCase.call()은 생략 가능
     // List<Note> notes = await getNotes();
 
-    // notes_state에 noteOrder 추가한 후 인자로 받아옴옴
+    // notes_state에 noteOrder 추가한 후 인자로 받아옴
     List<Note> notes = await useCases.getNotes(state.noteOrder);
 
     //List<Note> notes = await repository.getNotes();
     //notes.sort((a,b) => -a.timestamp.compareTo(b.timestamp));await repository.getNotes();
+    List<Note> sortedNotes = [...notes];
+
+    sortedNotes.sort((noteA, noteB) {
+      return noteA.timestamp.compareTo(noteB.timestamp);
+    });
+    //List<Note> notes = await repository.getNotes();
+    //notes.sort((a,b) => -a.timestamp.compareTo(b.timestamp));await repository.getNotes();
+
+    final initialDate = DateTime.fromMillisecondsSinceEpoch(sortedNotes.first.timestamp);
 
     _state = state.copyWith(
       notes: notes,
+      initialSelectedDate: initialDate,
     );
     notifyListeners();
   }

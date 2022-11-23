@@ -172,7 +172,8 @@ class NotesScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 20, left: 20),
       child: DatePicker(
-        DateTime.now().toLocal(),
+        //DateTime.now().toLocal(),
+        viewModel.state.initialSelectedDate,
         height: 100,
         width: 80,
         initialSelectedDate: DateTime.now().toLocal(),
